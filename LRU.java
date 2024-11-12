@@ -41,3 +41,17 @@ public class lru
         
     }
 }
+/*
+Enter the number of frames: 3
+Enter the number of pages: 7
+Enter the page reference string(space-seprated): 1 0 1 2 3 5 3
+Frames: 1 
+Frames: 1 0 
+Frames: 0 1 
+Frames: 0 1 2        
+Frames: 1 2 3        
+Frames: 2 3 5        
+Frames: 2 5 3        
+Total Page Faults: 5 
+Page Fault Ratio :5:7 
+*/
