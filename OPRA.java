@@ -1,90 +1,96 @@
-Program: Optimal Page Replacement Algorithm 
 import java.util.*;
- public class OPRA {
+
+public class optimal {
     public static void main(String[] args) {
         Scanner sc = new Scanner(System.in);
-        // Get inputs for pages and number of frames
-        System.out.println("Enter number of frames: ");
-        int frames = sc.nextInt();
-        System.out.println("Enter number of pages: ");
-        int pagesCount = sc.nextInt();
-        int[] pages = new int[pagesCount];
-        System.out.println("Enter the page reference string: ");
-        for (int i = 0; i < pagesCount; i++) {
-            pages[i] = sc.nextInt();
+
+        System.out.print("Enter number of Frames: ");
+        int numberofframes = sc.nextInt();
+
+        System.out.println("Enter Number Of Pages: ");
+        int pages = sc.nextInt();
+
+        int ReferenceString[] = new int[pages];
+        System.out.println("Enter Pages in Reference string:");
+        for (int i = 0; i < pages; i++) {
+
+            ReferenceString[i] = sc.nextInt();
         }
-        // Initialize frames and other variables
-        int[] frameArray = new int[frames];
-        Arrays.fill(frameArray, -1);
-        int pageFaults = 0;
-        for (int i = 0; i < pagesCount; i++) {
-            int currentPage = pages[i];
-            if (!isInFrames(frameArray, currentPage)) {
-                pageFaults++;
-                int replaceIndex = findOptimalIndex(frameArray, pages, i + 1);
-                frameArray[replaceIndex] = currentPage;
+
+        List<Integer> Frames = new ArrayList<>(numberofframes);
+        int hit = 0;
+        int miss = 0;
+
+        for (int i = 0; i < pages; i++) {
+
+            boolean isHit = false;
+
+            if (Frames.contains(ReferenceString[i])) {
+                hit++;
+                isHit = true;
             }
-            // Print the current state of frames
-            System.out.print("Frames after inserting page " + currentPage + ": ");
-            printFrames(frameArray);
-        }
-        System.out.println("Total page faults: " + pageFaults);
-    }
-    // Check if a page is already in frames
-    private static boolean isInFrames(int[] frames, int page) {
-        for (int frame : frames) {
-            if (frame == page) {
-                return true;
-            }
-        }
-        return false;
-    }
-    // Find the optimal index for replacement
-    private static int findOptimalIndex(int[] frames, int[] pages, int start) {
-        int farthest = start;
-        int index = -1;
-        for (int i = 0; i < frames.length; i++) {
-            int j;
-            for (j = start; j < pages.length; j++) {
-                if (frames[i] == pages[j]) {
-                    if (j > farthest) {
-                        farthest = j;
-                        index = i;
+            if (isHit == false) {
+                miss++;
+
+                if (Frames.size() == numberofframes) {
+
+                    int farthestindex = -1;
+                    int pagetoreplace = -1;
+
+                    for (int page : Frames) {
+                        int nextuse = Integer.MAX_VALUE;
+
+                        for (int j = 0; j < pages; j++) {
+
+                            if (ReferenceString[j] == page) {
+                                nextuse = j;
+                                break;
+                            }
+                        }
+
+                        if (nextuse == Integer.MAX_VALUE) {
+                            pagetoreplace = page;
+                            break;
+                        }
+
+                        if (nextuse > farthestindex) {
+                            farthestindex = nextuse;
+                            pagetoreplace = page;
+                        }
+
                     }
-                    break;
+                    Frames.remove(Integer.valueOf(pagetoreplace));
+
                 }
+                Frames.add(ReferenceString[i]);
             }
-            if (j == pages.length) {
-                return i; // Page not found in the future, replace this frame
-            }
+
+            System.out.println(Frames);
+
         }
-        return (index == -1) ? 0 : index;
+
+        System.out.println("Number of hits: " + hit);
+        System.out.println("Number Of Page faults:" + miss);
+        sc.close();
+
     }
-    // Print the frames
-    private static void printFrames(int[] frames) {
-        for (int frame : frames) {
-            if (frame == -1) {
-                System.out.print("[ ] ");
-            } else {
-                System.out.print("[" + frame + "] ");
-            }
-        }
-        System.out.println();
-    }
- }
-Output:
-Enter number of frames: 
-5
-Enter number of pages: 
+
+}
+
+/*
+ Enter number of Frames: 3
+Enter Number Of Pages: 
 8
-Enter the page reference string: 
-1 2 3 2 1 4 5 6
-Frames after inserting page 1: [1] [ ] [ ] [ ] [ ] 
-Frames after inserting page 2: [1] [2] [ ] [ ] [ ] 
-Frames after inserting page 3: [1] [2] [3] [ ] [ ] 
-Frames after inserting page 2: [1] [2] [3] [ ] [ ] 
-Frames after inserting page 1: [1] [2] [3] [ ] [ ] 
-Frames after inserting page 4: [4] [2] [3] [ ] [ ] 
-Frames after inserting page 5: [5] [2] [3] [ ] [ ] 
-Frames after inserting page 6: [6] [2] [3] [ ] [ ] 
-Total page faults: 6
+Enter Pages in Reference string:
+1 3 7 0 6 2 1 2
+[1]      
+[1, 3]   
+[1, 3, 7]
+[1, 3, 0]
+[1, 3, 6]
+[1, 3, 2]
+[1, 3, 2]
+[1, 3, 2]
+Number of hits: 2
+Number Of Page faults:6
+ */
