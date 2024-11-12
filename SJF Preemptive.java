@@ -1,126 +1,92 @@
 import java.util.Scanner;
-public class Main{
-	public static void main(String[] args) {
-		int bt[],process[],wt[],tat[],arr_time[],ct[],i,j,n,total=0,total_comp=0,pos,temp;
-		float wait_avg,tat_avg;
-		Scanner s=new Scanner(System.in);
-		System.out.print("Enter the number of processes:");
-		n=s.nextInt();
-		process=new int[n];
-		bt=new int[n];
-		wt=new int[n];
-		tat=new int[n];
-		arr_time=new int[n];
-		ct=new int[n];
-		//Burst time 
-		System.out.println("\nEnter Burst time:");
-        for(i=0;i<n;i++)
-        {
-        System.out.print("\nProcess["+(i+1)+"]: ");
-        bt[i] = s.nextInt();;
-        process[i]=i+1; //Process Number
-        }
-        System.out.println("\nEnter arrival time:");
-        for(i=0;i<n;i++)
-        {
-        System.out.print("\nProcess["+(i+1)+"]: ");
-        arr_time[i] = s.nextInt();
-        process[i]=i+1; //Process Number
-        }
-        //Sorting
-        for(i=0;i<n;i++)
-        {
-        pos=i;
-        for(j=i+1;j<n;j++)
-        { if(bt[j]<bt[pos])
-        pos=j;
-        }
-        temp=bt[i];
-        bt[i]=bt[pos];
-        bt[pos]=temp;
-        temp=process[i];
-        process[i]=process[pos];
-        process[pos]=temp;
-        System.out.println("process"+process[i]);
-        }
-        //completion time new 
-        for(i=1;i<n;i++)
-        {
-        ct[i]=0;
-        for(j=0;j<i;j++)
-        ct[i]+=bt[j];
-        total_comp+=ct[i];
-        }
-        //First process has 0 waiting time
-        wt[0]=0;
-        //calculate waiting time
-        for(i=1;i<n;i++)
-        {
-        wt[i]=0;
-        for(j=0;j<i;j++)
-        wt[i]+=bt[j];
-        total+=wt[i];
-        }
-        //Calculating Average waiting time
-        wait_avg=(float)total/n;
-        total=0;
-        System.out.println("\nPro_number\t Burst Time \tcompletion_time\tWaiting Time\tTurnaround Time");
-        for(i=0;i<n;i++) {
-        tat[i]=bt[i]+wt[i];
+public class SJFPreemptive 
+{
+public static void main(String[] args) {
+Scanner sc = new Scanner(System.in);
+System.out.print("Enter the number of processes: ");
+int n = sc.nextInt();
+int[] bt = new int[n];
+int[] at = new int[n];
+int[] rt = new int[n];
+int[] wt = new int[n];
+int[] tat = new int[n];
+boolean[] completed = new boolean[n];
 
-        total+=tat[i];
-        System.out.println("\n"+process[i]+"\t\t "+bt[i]+"\t\t"+ct[i]+"\t\t"+wt[i]+"\t\t "+tat[i]);
-        }
-        //Calculation of Average Turnaround Time
-        tat_avg=(float)total/n;
-        System.out.println("\n\nAWT: "+wait_avg);
-        System.out.println("\nATAT: "+tat_avg);
-         }
+System.out.println("Enter Arrival Time and Burst Time of the processes:");
+for (int i = 0; i < n; i++) {
+System.out.print("P" + (i + 1) + ": ");
+at[i] = sc.nextInt();
+bt[i] = sc.nextInt();
+rt[i] = bt[i]; // remaining time
 }
-Enter the number of processes:5
 
-Enter Burst time:
+int completedProcesses = 0, currentTime = 0, shortest = 0;
+boolean found;
+String ganttChart = "";
 
-Process[1]: 2
+while (completedProcesses < n)
+{
+    found = false;
+    for (int i = 0; i < n; i++) 
+    {
+        if (!completed[i] && at[i] <= currentTime && (found == false || rt[i] < rt[shortest]))
+        {
+            shortest = i;
+            found = true;
+        }
+    }
+    if (found) 
+    {
+        rt[shortest]--;
+        ganttChart += "P" + (shortest + 1) + " ";
+        currentTime++;
+        if (rt[shortest] == 0)
+        {
+            completed[shortest] = true;
+            completedProcesses++;
+            tat[shortest] = currentTime - at[shortest];
+            wt[shortest] = tat[shortest] - bt[shortest];
+        }
+    } 
+    else 
+    {
+        currentTime++;
+        ganttChart += "idle ";
+    }
+}
 
-Process[2]: 3
+// Output Gantt Chart
+System.out.println("Gantt Chart: " + ganttChart);
 
-Process[3]: 4
+// Calculate Average WT and TAT
+float avgWT = 0, avgTAT = 0;
+System.out.println("Process\tArrival\tBurst\tWaiting\tTurnaround");
+for (int i = 0; i < n; i++) {
+avgWT += wt[i];
+avgTAT += tat[i];
+System.out.println("P" + (i + 1) + "\t" + at[i] + "\t" + bt[i] + "\t" + wt[i] + "\t" + tat[i]);
+}
+avgWT /= n;
+avgTAT /= n;
+System.out.println("Average Waiting Time: " + avgWT);
+System.out.println("Average Turnaround Time: " + avgTAT);
+sc.close();
+}
+}
+/*
+Enter the number of processes: 4
+Enter Arrival Time and Burst Time of the processes:
+P1: 0 5
+P2: 1 3
+P3: 2 4
+P4: 4 1
+Gantt Chart: P1 P2 P2 P2 P4 P1 P1 P1 P1 P3 P3 P3 P3 
+Process Arrival Burst   Waiting Turnaround
+P1      0       5       4       9
+P2      1       3       0       3
+P3      2       4       7       11
+P4      4       1       0       1
+Average Waiting Time: 2.75
+Average Turnaround Time: 6.0
+ */
 
-Process[4]: 5
-
-Process[5]: 6
-
-Enter arrival time:
-
-Process[1]: 1
-
-Process[2]: 2
-
-Process[3]: 3
-
-Process[4]: 4
-
-Process[5]: 5
-process1
-process2
-process3
-process4
-process5
-
-Pro_number       Burst Time     completion_time Waiting Time    Turnaround Time
-
-1                2              0               0                2
-
-2                3              2               2                5
-
-3                4              5               5                9
-
-4                5              9               9                14
-
-5                6              14              14               20
-
-
-AWT: 6.0
-
-ATAT: 10.0
