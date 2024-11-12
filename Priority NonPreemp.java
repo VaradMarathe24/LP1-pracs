@@ -1,110 +1,108 @@
-Program: Priortiy (Non preemptive)
+import java.util.Arrays;
+import java.util.Comparator;
 import java.util.Scanner;
- public class PNP {
- public static void main(String args[]) {
- Scanner s = new Scanner(System.in);
- int x,n,p[],pp[],bt[],w[],t[],i;
- float awt,atat;
- p = new int[10];
- pp = new int[10];
- bt = new int[10];
- w = new int[10];
- t = new int[10];
- //n is number of process
- //p is process
- //pp is process priority
- //bt is process burst time
- //w is wait time
- // t is turnaround time
- //awt is average waiting time
- //atat is average turnaround time
- System.out.print("Enter the number of process : ");
- n = s.nextInt();
- System.out.print("\n\t Enter CPU time---priority \n");
- for(i=0;i<n;i++)
- {
- System.out.print("\nProcess["+(i+1)+"]:");
-bt[i] = s.nextInt();
- pp[i] = s.nextInt();p[i]=i+1;
- }
- //sorting on the basis of priority
- for(i=0;i<n-1;i++)
- {
- for(int j=i+1;j<n;j++)
- {
- if(pp[i]<pp[j])
- {
- x=pp[i];
- pp[i]=pp[j];
- pp[j]=x;
- x=bt[i];
- bt[i]=bt[j];
- bt[j]=x;
- x=p[i];
- p[i]=p[j];
- p[j]=x;
- }
- }
- }
- w[0]=0;
- awt=0;
- t[0]=bt[0];
- atat=t[0];
- for(i=1;i<n;i++)
- {
- w[i]=t[i-1];
- awt+=w[i];
- t[i]=w[i]+bt[i];
- atat+=t[i];
- }
- //Displaying the process
- System.out.println("-----------------------------------------------------------------------");
- System.out.print("\n\nProcess \t\t |Burst Time \t\t |Wait Time \t\t Turn Time\t\t priority\n");
- System.out.println("-----------------------------------------------------------------------");
- for(i=0;i<n;i++)
- System.out.print("\n"+p[i]+"\t\t| "+bt[i]+"\t\t| "+w[i]+"\t\t|"+t[i]+"\t\t| "+pp[i]+"\n");
- System.out.println("-----------------------------------------------------------------------");
- awt/=n;
- atat/=n;
- System.out.print("\n Average Wait Time : "+awt);
- System.out.print("\n Average Turn Around Time : "+atat);
- }
- }
-Output: 
-Enter the number of process : 5
 
-         Enter CPU time---priority 
+class PriorityProcess {
+int pid, burstTime, priority, waitingTime, turnaroundTime;
+public PriorityProcess(int pid, int burstTime, int priority) {
+this.pid = pid;
+this.burstTime = burstTime;
+this.priority = priority;
+}
+}
 
-Process[1]:2
-3
+public class PriorityNonPreemptive {
+public static void main(String[] args) 
+{
+Scanner sc = new Scanner(System.in);
+System.out.print("Enter number of processes: ");
+int n = sc.nextInt();
+PriorityProcess[] processes = new PriorityProcess[n];
+for (int i = 0; i < n; i++) {
+System.out.print("Enter burst time and priority for process " + (i + 1) + ": ");
+int bt = sc.nextInt(); 
+int priority = sc.nextInt();
+processes[i] = new PriorityProcess(i + 1, bt, priority);
+}
 
-Process[2]:4
-5
+System.out.println("\nBefore sorting(Based on input): "); 
+for (PriorityProcess p : processes) 
+{
+    System.out.println("Process P" + p.pid + ": Burst Time = " + p.burstTime + ", Priority = " + p.priority);
+}
 
-Process[3]:6
-7
+for (int i = 0; i < n - 1; i++) {
+for (int j = 0; j < n - i - 1; j++) {
+if (processes[j].priority > processes[j + 1].priority) 
+{
+PriorityProcess temp = processes[j];
+processes[j] = processes[j + 1];
+processes[j + 1] = temp; 
+} 
+}
+}
 
-Process[4]:8
-9
+System.out.println("\nAfter sorting based on priority: ");
+for (PriorityProcess p : processes) 
+{ 
+    System.out.println("Process P" + p.pid + ": Burst Time = " + p.burstTime + ", Priority = " + p.priority); 
+}
 
-Process[5]:10
-11
------------------------------------------------------------------------
+int totalTime = 0, totalWT = 0, totalTAT = 0;
+for (PriorityProcess p : processes) 
+{
+p.waitingTime = totalTime;
+totalTime += p.burstTime;
+p.turnaroundTime = p.waitingTime + p.burstTime;
+totalWT += p.waitingTime;
+totalTAT += p.turnaroundTime;
+}
 
+System.out.println("\nGantt Chart: ");
+for (PriorityProcess p : processes) {
+System.out.print("P" + p.pid + " ");
+}
+System.out.println();
 
-Process                  |Burst Time             |Wait Time              Turn Time               priority
------------------------------------------------------------------------
+System.out.println("\nProcess\tBurst\tPriorit y\tWaiting\tTurnaround");
+for (PriorityProcess p : processes) {
+System.out.println("P" + p.pid + "\t" + p.burstTime + "\t" + p.priority + "\t\t" + p.waitingTime + "\t\t" + p.turnaroundTime);
+}
 
-5               | 10            | 0             |10             | 11
+System.out.println("\nAverage Waiting Time: " + (totalWT / (float) n));
+System.out.println("Average Turnaround Time: " + (totalTAT / (float) n));
+sc.close(); 
+}
+}
 
-4               | 8             | 10            |18             | 9
+/*
+Enter number of processes: 4
+Enter burst time and priority for process 1: 10 2
+Enter burst time and priority for process 2: 5 1
+Enter burst time and priority for process 3: 2 0
+Enter burst time and priority for process 4: 20 3
 
-3               | 6             | 18            |24             | 7
+Before sorting(Based on input): 
+Process P1: Burst Time = 10, Priority = 2
+Process P2: Burst Time = 5, Priority = 1 
+Process P3: Burst Time = 2, Priority = 0 
+Process P4: Burst Time = 20, Priority = 3
 
-2               | 4             | 24            |28             | 5
+After sorting based on priority:
+Process P3: Burst Time = 2, Priority = 0
+Process P2: Burst Time = 5, Priority = 1
+Process P1: Burst Time = 10, Priority = 2
+Process P4: Burst Time = 20, Priority = 3
 
-1               | 2             | 28            |30             | 3
------------------------------------------------------------------------
+Gantt Chart:
+P3 P2 P1 P4
 
- Average Wait Time : 16.0
- Average Turn Around Time : 22.0
+Process Burst   Priorit y       Waiting Turnaround
+P3      2       0               0               2
+P2      5       1               2               7
+P1      10      2               7               17
+P4      20      3               17              37
+
+Average Waiting Time: 6.5
+Average Turnaround Time: 15.75
+ */
