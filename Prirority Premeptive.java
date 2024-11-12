@@ -63,19 +63,3 @@ import java.util.Scanner;
         sc.close();
     }
  }
-Output:
-Enter number of processes: 5
-Enter arrival time, burst time, and priority for process 1: 2 4 5
-Enter arrival time, burst time, and priority for process 2: 3 6 4
-Enter arrival time, burst time, and priority for process 3: 4 8 6
-Enter arrival time, burst time, and priority for process 4: 5 10 3
-Enter arrival time, burst time, and priority for process 5: 6 7 2
-Gantt Chart: idle idle P1 P2 P2 P4 P5 P5 P5 P5 P5 P5 P5 P4 P4 P4 P4 P4 P4 P4 P4 P4 P2 P2 P2 P2 P1 P1 P1 P3 P3 P3 P3 P3 P3 P3 P3 
-Process Arrival Burst   Priority        Waiting Turnaround
-P1      2       4       5               23      27
-P2      3       6       4               17      23
-P3      4       8       6               25      33
-P4      5       10      3               7       17
-P5      6       7       2               0       7
-Average Waiting Time: 14.4
-Average Turnaround Time: 21.4
